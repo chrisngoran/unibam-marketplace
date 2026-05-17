@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: file:./dev.db
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: change_me
+      GITHUB_ID: ''
+      GITHUB_SECRET: ''
+      STRIPE_SECRET: 'sk_test_change_me'
+    volumes:
+      - .:/app
+      - /app/node_modules
