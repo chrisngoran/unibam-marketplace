@@ -11,6 +11,7 @@ export default function EditProduct() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
   const [price, setPrice] = useState('')
+  const [image, setImage] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function EditProduct() {
         setTitle(product.title)
         setDescription(product.description || '')
         setCategory(product.category || '')
+        setImage(product.image || '')
         setPrice((product.priceCents / 100).toFixed(2))
       })
   }, [id])
@@ -39,7 +41,7 @@ export default function EditProduct() {
     const res = await fetch(`/api/products/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, category, priceCents: Math.round(Number(price) * 100) }),
+      body: JSON.stringify({ title, description, category, image, priceCents: Math.round(Number(price) * 100) }),
     })
 
     if (res.ok) router.push(`/products/${id}`)
@@ -67,6 +69,10 @@ export default function EditProduct() {
           <div>
             <label className="block text-sm">Description</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full border p-2" />
+          </div>
+          <div>
+            <label className="block text-sm">Image URL</label>
+            <input value={image} onChange={e => setImage(e.target.value)} className="w-full border p-2" placeholder="https://..." />
           </div>
           <div>
             <label className="block text-sm">Price (USD)</label>

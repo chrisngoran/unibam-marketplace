@@ -15,6 +15,12 @@ Next steps:
 - Run `npm run prisma:migrate` to create the database
 - Implement authentication and payments
  - Configure GitHub OAuth: set `GITHUB_ID` and `GITHUB_SECRET` in `.env`
+ - Optional: add Google OAuth with `GOOGLE_ID` and `GOOGLE_SECRET`
+ - Optional: add Facebook OAuth with `FACEBOOK_ID` and `FACEBOOK_SECRET`
+ - For local dev, set `NEXTAUTH_URL` to the actual dev server address (for example `http://localhost:3001` if port 3000 is already in use)
+ - Use these local callbacks when configuring providers:
+   - Google:  `http://localhost:3001/api/auth/callback/google`
+   - Facebook: `http://localhost:3001/api/auth/callback/facebook`
  - Run `npm run prisma:migrate` after setting `DATABASE_URL`
  - To use Stripe payments, set `STRIPE_SECRET` and `NEXTAUTH_URL` in `.env`
 - To run locally when dependencies are installed:

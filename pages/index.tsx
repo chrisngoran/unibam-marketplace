@@ -1,14 +1,28 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import ProductCard from '../components/ProductCard'
 import Header from '../components/Header'
 
-type Product = { id: string; title: string; description?: string; category?: string; priceCents: number }
+type Product = { id: string; title: string; description?: string; category?: string; priceCents: number; image?: string }
 
 export default function Home() {
+  const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('')
+  const [sort, setSort] = useState('newest')
+
+  useEffect(() => {
+    if (router.isReady) {
+      const q = typeof router.query.q === 'string' ? router.query.q : ''
+      const cat = typeof router.query.category === 'string' ? router.query.category : ''
+      const sortParam = typeof router.query.sort === 'string' ? router.query.sort : 'newest'
+      setQuery(q)
+      setCategory(cat)
+      setSort(sortParam)
+    }
+  }, [router.isReady, router.query])
 
   useEffect(() => {
     fetch('/api/products')
@@ -37,13 +51,26 @@ export default function Home() {
             onChange={e => setQuery(e.target.value)}
             placeholder="Search by title, category, or description"
             className="w-full border p-3 rounded"
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                router.push(`/?q=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}&sort=${encodeURIComponent(sort)}`)
+              }
+            }}
           />
-          <select value={category} onChange={e => setCategory(e.target.value)} className="w-full border p-3 rounded">
-            <option value="">All categories</option>
-            {[...new Set(products.map(p => p.category).filter(Boolean))].map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
+          <div className="space-y-2">
+            <select value={category} onChange={e => setCategory(e.target.value)} className="w-full border p-3 rounded">
+              <option value="">All categories</option>
+              {[...new Set(products.map(p => p.category).filter(Boolean))].map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+            <select value={sort} onChange={e => setSort(e.target.value)} className="w-full border p-3 rounded">
+              <option value="newest">Newest</option>
+              <option value="priceLow">Price: Low to High</option>
+              <option value="priceHigh">Price: High to Low</option>
+              <option value="category">Category</option>
+            </select>
+          </div>
         </div>
 
         {products.length === 0 ? (
@@ -56,6 +83,12 @@ export default function Home() {
               .filter(p => {
                 const text = `${p.title} ${p.description || ''} ${p.category || ''}`.toLowerCase()
                 return text.includes(query.toLowerCase()) && (category ? p.category === category : true)
+              })
+              .sort((a, b) => {
+                if (sort === 'priceLow') return a.priceCents - b.priceCents
+                if (sort === 'priceHigh') return b.priceCents - a.priceCents
+                if (sort === 'category') return (a.category || '').localeCompare(b.category || '')
+                return 0
               })
               .map(p => (
                 <ProductCard key={p.id} product={p} />

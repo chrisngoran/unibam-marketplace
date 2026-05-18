@@ -24,9 +24,59 @@ model Product {
   category    String?
   priceCents  Int
   image       String?
+  images      String?
+  specs       String?
   ownerId     String
   owner       User     @relation(fields: [ownerId], references: [id])
   createdAt   DateTime @default(now())
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String?    
+  items     CartItem[] 
+  createdAt DateTime   @default(now())
+}
+
+model CartItem {
+  id       String @id @default(cuid())
+  cartId   String
+  productId String
+  qty      Int
+  title    String?
+  priceCents Int?
+
+  cart Cart @relation(fields: [cartId], references: [id])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String?
+  totalCents      Int
+  status          String      @default("pending")
+  stripeSessionId String?     @unique
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
+  qty       Int
+  title     String?
+  priceCents Int
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  rating    Int
+  body      String?
+  createdAt DateTime @default(now())
 }
 
 model Account {

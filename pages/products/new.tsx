@@ -8,6 +8,7 @@ export default function NewProduct() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
   const [price, setPrice] = useState('')
+  const [image, setImage] = useState('')
   const router = useRouter()
   const { data: session } = useSession()
 
@@ -16,7 +17,7 @@ export default function NewProduct() {
     const res = await fetch('/api/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, category, priceCents: Math.round(Number(price) * 100) }),
+      body: JSON.stringify({ title, description, category, image, priceCents: Math.round(Number(price) * 100) }),
     })
     if (res.ok) router.push('/')
     else alert('Error creating product')
@@ -49,6 +50,10 @@ export default function NewProduct() {
             <div>
               <label className="block text-sm">Price (USD)</label>
               <input value={price} onChange={e => setPrice(e.target.value)} className="w-full border p-2" />
+            </div>
+            <div>
+              <label className="block text-sm">Image URL</label>
+              <input value={image} onChange={e => setImage(e.target.value)} className="w-full border p-2" placeholder="https://..." />
             </div>
             <div>
               <button className="bg-blue-600 text-white px-4 py-2 rounded">Create</button>
